@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR RISHBOY</title>
+    <link rel="icon" type="image/x-icon" href="img/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Bungee&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+         :root {
+            --neon-cyan: #00ffff;
+            --neon-pink: #ff006e;
+            --neon-green: #39ff14;
+            --neon-purple: #bf00ff;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #00ffff;
+        }
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            cursor: none;
+            scroll-behavior: smooth;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+        
+        .cursor-trail {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-pink);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.7;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--neon-cyan);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 1rem;
+        }
+        
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--neon-cyan);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        /* New CSS for Mobile Menu */
+        
+        .mobile-menu {
+            display: none;
+            font-size: 2rem;
+            color: var(--neon-cyan);
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 250px;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: right 0.3s ease-in-out;
+                z-index: 1000;
+            }
+            .nav-links.active {
+                right: 0;
+            }
+            .nav-links li {
+                margin: 1rem 0;
+            }
+            .nav-links a {
+                font-size: 1.5rem;
+                padding: 1rem;
+            }
+        }
+        /* End New CSS for Mobile Menu */
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+        }
+        
+        .glitch-text {
+            font-family: 'Bungee', cursive;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: var(--neon-cyan);
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%,
+            100% {
+                text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+                transform: translate(0);
+            }
+            20% {
+                text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-green);
+                transform: translate(-2px, 0);
+            }
+            40% {
+                text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-green);
+                transform: translate(2px, 0);
+            }
+            60% {
+                text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+                transform: translate(0);
+            }
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            animation: fadeInUp 1s ease 0.5s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .cta-button {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--neon-cyan);
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--neon-cyan);
+        }
+        
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .about-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .about-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .skills-container {
+            margin-top: 2rem;
+        }
+        
+        .skill-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .skill-name {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .skill-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            width: 0;
+            transition: width 2s ease;
+            position: relative;
+        }
+        
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            aspect-ratio: 1;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            padding: 2px;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .contact-section {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-top: 3rem;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .contact-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-button.whatsapp {
+            border-color: #25d366;
+            color: #25d366;
+        }
+        
+        .contact-button.youtube {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .contact-button.facebook {
+            border-color: #1900ff;
+            color: #2600ff;
+        }
+        
+        .contact-button.email {
+            border-color: lch(96.1% 95.76 101.84);
+            color: #ffee00;
+        }
+        
+        .contact-button.discord {
+            border-color: #5865f2;
+            color: #5865f2;
+        }
+        
+        .contact-button.github {
+            border-color: #333;
+            color: #fff;
+        }
+        
+        .contact-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px currentColor;
+        }
+        
+        .contact-button span {
+            margin-left: 0.5rem;
+        }
+        
+        .page-views {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--neon-cyan);
+            font-size: 0.9rem;
+            color: var(--neon-cyan);
+            z-index: 1000;
+        }
+        /* Admin Login Modal */
+        
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-form {
+            background: var(--dark-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .admin-form h2 {
+            color: var(--neon-cyan);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .admin-form input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--text-primary);
+            border-radius: 5px;
+        }
+        
+        .admin-form button {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-form button:hover {
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+        /* Admin Dashboard */
+        
+        .admin-dashboard {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--dark-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 2px solid var(--neon-pink);
+            z-index: 10001;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .admin-dashboard h3 {
+            color: var(--neon-pink);
+            margin-bottom: 1rem;
+        }
+        
+        .admin-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--neon-pink);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .three-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--neon-cyan);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .hero-title {
+                font-size: 3rem;
+            }
+            .section {
+                padding: 3rem 1rem;
+            }
+            .admin-form {
+                width: 95%;
+                padding: 1.5rem;
+            }
+            .admin-dashboard {
+                width: 95%;
+                padding: 1.5rem;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .cta-button,
+            .contact-button {
+                cursor: pointer;
+                /* Ensure touch-friendly */
+            }
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--neon-cyan);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">INITIALIZING...</div>
+    </div>
+
+    <div id="particles-js"></div>
+
+    <div class="custom-cursor"></div>
+    <div class="cursor-trail"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">MR RISHBOY</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <!-- <li><a href="#projects">Projects</a></li> -->
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" id="admin-login">🔒</a></li>
+            </ul>
+            <!-- Added Mobile Menu -->
+            <div class="mobile-menu">☰</div>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="three-container" id="threeScene"></div>
+        <div class="hero-content">
+            <h1 class="glitch-text">RISHBOY</h1>
+            <p class="hero-subtitle">Sri Lankan gamer and content creator. I stream gameplay and share my passion for gaming.</p>
+            <button class="cta-button" onclick="scrollToSection('about')">EXPLORE NOW</button>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <h2 class="section-title">ABOUT ME</h2>
+        <div class="about-grid">
+            <div class="about-card" data-aos="fade-right">
+                <h3>🕹️ Gamer</h3><br>
+                <p>I'm not just playing games—I’m mastering worlds. Whether it’s competitive shooters, open-world adventures, or tactical raids, I thrive in digital battlegrounds. Gaming fuels my passion, sharpens my reflexes, and connects me with a global
+                    community of warriors.</p>
+            </div>
+            <div class="about-card" data-aos="fade-up">
+                <h3>🎬 Content Creator</h3><br>
+                <p>Creating isn’t just what I do—it's who I am. From livestreams and tutorials to cinematic edits and tech deep-dives, I bring raw energy and creativity to every piece of content. My mission? To entertain, educate, and empower through gaming
+                    and cybersecurity.</p>
+            </div>
+        </div>
+
+        <div class="skills-container">
+            <h3 style="text-align: center; margin-bottom: 2rem; color: var(--neon-pink);">SKILLS MATRIX</h3>
+            <div class="skill-item">
+                <div class="skill-name">Creative Thinking</div>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="95"></div>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-name">Play Games</div>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="90"></div>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-name">Photo Editing</div>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="85"></div>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-name">Video Editing</div>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="80"></div>
+                </div>
+            </div>
+            <div class="skill-item">
+                <div class="skill-name">Travel Experience</div>
+                <div class="skill-bar">
+                    <div class="skill-progress" data-width="88"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="gallery">
+        <h2 class="section-title">GALLERY</h2>
+        <div class="gallery-container">
+            <div class="gallery-item" data-aos="zoom-in">
+                <img src="img/01.jpg" alt="Cyber Security Lab">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100">
+                <img src="img/02.jpg" alt="Game Mod Showcase">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200">
+                <img src="img/03.jpg" alt="CTF Trophy">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300">
+                <img src="img/04.jpg" alt="Custom Build">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="400">
+                <img src="img/05.jpg" alt="Vulnerability Report">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="500">
+                <img src="img/06.jpg" alt="Workshop">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="500">
+                <img src="img/7.jpg" alt="Workshop">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="500">
+                <img src="img/8.jpg" alt="Workshop">
+                <div class="gallery-overlay">
+                    <h4>GAMING (FIVEM)</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- <section class="section" id="projects">
+        <h2 class="section-title">PROJECTS</h2>
+        <div class="about-grid">
+            <div class="about-card" data-aos="flip-left">
+                <h3>Anti-Cheat Bypass</h3>
+                <p>Research project on bypassing popular game anti-cheats. Published whitepaper on kernel-level vulnerabilities.</p>
+                <button class="cta-button" style="margin-top: 1rem;">VIEW PROJECT</button>
+            </div>
+            <div class="about-card" data-aos="flip-left" data-aos-delay="100">
+                <h3>Cyberpunk Trainer</h3>
+                <p>Open-source trainer for Cyberpunk 2077 with advanced features and security measures.</p>
+                <button class="cta-button" style="margin-top: 1rem;">GITHUB</button>
+            </div>
+            <div class="about-card" data-aos="flip-left" data-aos-delay="200">
+                <h3>Game Security Scanner</h3>
+                <p>Automated tool for scanning game executables for vulnerabilities and suspicious code patterns.</p>
+                <button class="cta-button" style="margin-top: 1rem;">DOWNLOAD</button>
+            </div>
+        </div>
+    </section> -->
+
+    <section class="section" id="contact">
+        <h2 class="section-title">CONTACT ME</h2>
+        <div class="contact-section">
+            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">
+                You can reach out for gaming sessions, streaming collabs, or any tech-related help!
+            </p>
+            <div class="contact-grid">
+                <a href="https://wa.me/+94715707036" class="contact-button whatsapp" target="_blank">
+                    <span>WhatsApp</span>
+                </a>
+                <a href="mailto:contact@rishboy.vip" class="contact-button email" target="_blank">
+                    <span>Email</span>
+                </a>
+                <a href="https://discord.gg/GQvxBxtXWg" class="contact-button discord" target="_blank">
+                    <span>Discord</span>
+                </a>
+                <a href="https://github.com/RISHBOY" class="contact-button github" target="_blank">
+                    <span>GitHub</span>
+                </a>
+                <a href="https://www.youtube.com/@mrrishboy1" class="contact-button youtube" target="_blank">
+                    <span>Youtube</span>
+                </a>
+                <a href="https://www.facebook.com/mrnotikolla/" class="contact-button facebook" target="_blank">
+                    <span>Facebook</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page Views Counter -->
+    <div class="page-views">
+        <i class="fas fa-eye"></i>
+        <span id="view-count">0</span> VIEWS
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="admin-modal" id="admin-modal">
+        <form class="admin-form" id="login-form">
+            <h2>ADMIN LOGIN</h2>
+            <input type="text" id="username" placeholder="USERNAME" required>
+            <input type="password" id="password" placeholder="PASSWORD" required>
+            <button type="submit">LOGIN</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="admin-dashboard">
+        <button class="close-btn" id="close-dashboard">&times;</button>
+        <h3>ADMIN DASHBOARD</h3>
+
+        <div class="admin-section">
+            <h4>Page Views</h4>
+            <p>Current views: <span id="admin-view-count">0</span></p>
+            <input type="number" id="view-count-input" placeholder="Set new view count">
+            <button onclick="setViewCount()">SET COUNTER</button>
+            <button onclick="resetViews()">RESET COUNTER</button>
+        </div>
+
+        <button onclick="logout()">LOGOUT</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+
+        // Page Views Counter
+        let pageViews = parseInt(localStorage.getItem('pageViews')) || 0;
+
+        function updateViewCount() {
+            pageViews++;
+            localStorage.setItem('pageViews', pageViews);
+            document.getElementById('view-count').textContent = pageViews;
+            document.getElementById('admin-view-count').textContent = pageViews;
+        }
+
+        updateViewCount();
+
+        function setViewCount() {
+            const newCount = parseInt(document.getElementById('view-count-input').value);
+            if (!isNaN(newCount) && newCount >= 0) {
+                pageViews = newCount;
+                localStorage.setItem('pageViews', pageViews);
+                document.getElementById('view-count').textContent = pageViews;
+                document.getElementById('admin-view-count').textContent = pageViews;
+                alert('View count updated!');
+            } else {
+                alert('Please enter a valid number!');
+            }
+        }
+
+        function resetViews() {
+            pageViews = 0;
+            localStorage.setItem('pageViews', 0);
+            updateViewCount();
+            alert('Page views reset!');
+        }
+
+        // Admin Panel
+        document.getElementById('admin-login').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('admin-modal').style.display = 'flex';
+        });
+
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === '0' && password === '0') {
+                document.getElementById('admin-modal').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+            } else {
+                alert('Invalid credentials!');
+            }
+        });
+
+        function logout() {
+            document.getElementById('admin-dashboard').style.display = 'none';
+        }
+
+        document.getElementById('close-dashboard').addEventListener('click', () => {
+            document.getElementById('admin-dashboard').style.display = 'none';
+        });
+
+        // Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const trail = document.querySelector('.cursor-trail');
+        let mouseX = 0,
+            mouseY = 0;
+        let trailX = 0,
+            trailY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            mouseX = touch.clientX;
+            mouseY = touch.clientY;
+
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+
+        function animateTrail() {
+            trailX += (mouseX - trailX) * 0.1;
+            trailY += (mouseY - trailY) * 0.1;
+
+            trail.style.left = trailX + 'px';
+            trail.style.top = trailY + 'px';
+
+            requestAnimationFrame(animateTrail);
+        }
+        animateTrail();
+
+        // Smooth Scroll
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Ripple Effect
+        document.querySelectorAll('.cta-button, .contact-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX ? e.clientX - rect.left - size / 2 : rect.width / 2;
+                const y = e.clientY ? e.clientY - rect.top - size / 2 : rect.height / 2;
+
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.classList.add('ripple');
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Skill Bars Animation
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const skillObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBars = entry.target.querySelectorAll('.skill-progress');
+                    progressBars.forEach(bar => {
+                        const width = bar.getAttribute('data-width');
+                        bar.style.width = width + '%';
+                    });
+                }
+            });
+        }, observerOptions);
+
+        const skillsContainer = document.querySelector('.skills-container');
+        if (skillsContainer) {
+            skillObserver.observe(skillsContainer);
+        }
+
+        // Three.js Background
+        let scene, camera, renderer, cube;
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({
+                alpha: true
+            });
+
+            const container = document.getElementById('threeScene');
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00ffff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1000;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.005,
+                color: 0xff006e
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                particlesMesh.rotation.y += 0.001;
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+
+        // Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#00ffff'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#00ffff',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                }
+            }
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin();
+
+        gsap.from('.hero-content', {
+            duration: 2,
+            y: 100,
+            opacity: 0,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.navbar', {
+            duration: 1,
+            y: -100,
+            opacity: 0,
+            ease: 'power3.out'
+        });
+
+        // Scroll Animations
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        document.querySelectorAll('.about-card, .gallery-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'all 0.6s ease';
+            scrollObserver.observe(el);
+        });
+
+        // Window Resize Handler
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+
+        // Initialize Three.js
+        initThree();
+
+        // Navigation Highlight
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Add some dynamic typing effect
+        const typingText = document.querySelector('.hero-subtitle');
+        const text = typingText.textContent;
+        typingText.textContent = '';
+
+        let i = 0;
+
+        function typeWriter() {
+            if (i < text.length) {
+                typingText.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        setTimeout(typeWriter, 2000);
+
+        // New JavaScript for Mobile Menu
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+        // End New JavaScript for Mobile Menu
+    </script>
+</body>
+
+</html>
